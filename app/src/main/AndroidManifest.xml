@@ -18,9 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:theme="@style/Theme.App.Base"
-            android:name=".activities.LoginActivity"/>
+        <activity android:name=".activities.LoginActivity" />
     </application>
 
 </manifest>

@@ -3,4 +3,12 @@
     <string name="action_login">ENTRAR</string>
     <string name="err_msg_service">Insira um serviço</string>
     <string name="err_msg_city">Insira uma cidade</string>
+    <string name="hint_service">Serviço</string>
+    <string name="hint_city">Cidade</string>
+    <string name="hint_email">E-mail</string>
+    <string name="hint_password">Senha</string>
+    <string name="copyright">© Copyright 2016 VERSALIUS</string>
+    <string name="forgot_password"><u>Esqueceu sua senha?</u></string>
+    <string name="singup"><u>Cadastre-se</u></string>
+    <string name="dont_have_acc">Não possui uma conta?</string>
 </resources>

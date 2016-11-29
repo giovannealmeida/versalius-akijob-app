@@ -1,72 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingLeft="@dimen/activity_login_horizontal_margin"
+    android:paddingRight="@dimen/activity_login_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="br.com.versalius.akijob.activities.LoginActivity"
     tools:showIn="@layout/activity_login">
 
-    <ImageView
-        android:id="@+id/ivLogo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:src="@drawable/logo" />
-
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/ll"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:background="@drawable/round_corner_layout"
         android:gravity="center"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/inputLayoutService"
+        <EditText
+            android:id="@+id/etEmail"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:layout_margin="15dp"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/ic_account_circle"
+            android:drawablePadding="5dp"
+            android:drawableTint="@color/colorAccent"
+            android:hint="@string/hint_email"
+            android:inputType="textEmailAddress"
+            android:maxLines="1"
+            android:textColor="@android:color/black" />
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_account_circle"
-                android:drawableTint="#999"
-                android:hint="E-mail"
-                android:lines="1"
-                android:inputType="textEmailAddress" />
+        <View style="@style/AppTheme.Divider" />
 
-        </android.support.design.widget.TextInputLayout>
-
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/inputLayoutCity"
+        <EditText
+            android:id="@+id/etPassword"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_lock"
-                android:drawableTint="#999"
-                android:hint="Senha"
-                android:lines="1"
-                android:inputType="textPassword" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.v7.widget.AppCompatButton
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
-            android:text="ENTRAR" />
+            android:layout_margin="15dp"
+            android:background="@android:color/transparent"
+            android:drawableLeft="@drawable/ic_lock"
+            android:drawablePadding="5dp"
+            android:drawableTint="@color/colorAccent"
+            android:hint="@string/hint_password"
+            android:inputType="textPassword"
+            android:maxLines="1"
+            android:textColor="@android:color/black" />
+
     </LinearLayout>
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/tvForgot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll"
+        android:gravity="right"
+        android:text="@string/forgot_password"
+        android:textColor="@color/colorLink"
+        android:textSize="@dimen/small_link" />
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvForgot"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:background="@color/colorAccent"
+        android:text="@string/action_login" />
+
+    <LinearLayout
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/btSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginRight="5dp"
+        android:text="@string/dont_have_acc"
+        android:textSize="@dimen/small_link" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/singup"
+        android:textColor="@color/colorLink"
+        android:textSize="@dimen/small_link" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/ll">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/logo" />
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="15dp"
+        android:text="© Copyrigh 2016 VERSALIUS" />
+</RelativeLayout>
