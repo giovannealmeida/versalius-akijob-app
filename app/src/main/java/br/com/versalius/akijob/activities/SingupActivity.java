@@ -2,13 +2,11 @@ package br.com.versalius.akijob.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import br.com.versalius.akijob.R;
 
-public class LoginActivity extends AppCompatActivity {
+public class SingupActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
