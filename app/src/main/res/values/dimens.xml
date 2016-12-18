@@ -6,6 +6,6 @@
 
     <!--QVGA 480x320-->
     <dimen name="activity_login_horizontal_margin">20dp</dimen>
-    <dimen name="small_link">14sp</dimen>
+    <dimen name="small_link">12sp</dimen>
     <dimen name="big_link">16sp</dimen>
 </resources>

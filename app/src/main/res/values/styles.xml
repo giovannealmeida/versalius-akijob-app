@@ -15,11 +15,17 @@
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.AppCompat">
+
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
         <!-- Fancy EditText -->
         <item name="android:textColorHint">#999</item>
         <item name="colorControlNormal">#999</item>
         <item name="colorControlActivated">@color/colorAccent</item>
         <item name="colorControlHighlight">@color/colorAccent</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme.Dark">

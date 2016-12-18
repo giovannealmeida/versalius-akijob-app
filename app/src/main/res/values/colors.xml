@@ -5,4 +5,5 @@
     <!--<color name="colorAccent">#FF4081</color>-->
     <color name="colorAccent">#337AB7</color>
     <color name="colorLink">#F47D67</color>
+    <color name="err_msg">#D50000</color>
 </resources>

@@ -57,30 +57,32 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvForgot"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btForgot"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignRight="@id/ll"
             android:layout_below="@id/ll"
-            android:gravity="right"
+            style="?android:attr/borderlessButtonStyle"
             android:text="@string/forgot_password"
             android:textColor="@color/colorLink"
             android:textSize="@dimen/small_link" />
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/btSearch"
+            android:id="@+id/btLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvForgot"
+            android:layout_below="@id/btForgot"
             android:layout_centerHorizontal="true"
-            android:layout_margin="10dp"
-            android:background="@color/colorAccent"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:textColor="@android:color/white"
+            android:elevation="4dp"
             android:text="@string/action_login" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/btSearch"
+            android:layout_below="@id/btLogin"
             android:layout_centerHorizontal="true"
             android:orientation="horizontal">
 
@@ -92,13 +94,14 @@
                 android:text="@string/dont_have_acc"
                 android:textSize="@dimen/small_link" />
 
-            <TextView
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/btSingup"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                style="?android:attr/borderlessButtonStyle"
                 android:text="@string/singup"
-                android:textColor="@color/colorLink"
-                android:textSize="@dimen/small_link" />
+                android:textColor="@color/colorLink" />
+
         </LinearLayout>
 
         <FrameLayout

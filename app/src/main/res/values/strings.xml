@@ -1,14 +1,71 @@
 <resources>
     <string name="app_name">AkiJob</string>
     <string name="action_login">ENTRAR</string>
-    <string name="err_msg_service">Insira um serviço</string>
-    <string name="err_msg_city">Insira uma cidade</string>
-    <string name="hint_service">Serviço</string>
-    <string name="hint_city">Cidade</string>
-    <string name="hint_email">E-mail</string>
-    <string name="hint_password">Senha</string>
     <string name="copyright">© Copyright 2016 VERSALIUS</string>
     <string name="forgot_password"><u>Esqueceu sua senha?</u></string>
     <string name="singup"><u>Cadastre-se</u></string>
     <string name="dont_have_acc">Não possui uma conta?</string>
+
+    <!--Titles-->
+    <string name="title_signup">CADASTRO</string>
+
+    <!--Hints-->
+    <string name="hint_service">Serviço</string>
+    <string name="hint_city">Cidade</string>
+    <string name="hint_email">E-mail</string>
+    <string name="hint_password">Senha</string>
+    <string name="hint_full_name">Nome completo</string>
+    <string name="hint_password_again">Repita a senha</string>
+    <string name="hint_state">Estado</string>
+    <string name="hint_birth_date">Data de nascimento</string>
+    <string name="hint_phone">Telefone</string>
+    <string name="hint_facebook">Facebook</string>
+    <string name="hint_twitter">Twitter</string>
+    <string name="hint_site">Site</string>
+
+    <!--Labels-->
+    <string name="lb_radio_male">Masculino</string>
+    <string name="lb_radio_female">Feminino</string>
+    <string name="lb_gender">Sexo</string>
+
+    <!--Mensagens de erros-->
+    <string name="err_msg_service">Insira um serviço</string>
+    <string name="err_msg_city">Insira uma cidade</string>
+    <string name="err_msg_empty_name">Insira o nome completo</string>
+    <string name="err_msg_empty_email">Insira um e-mail válido</string>
+    <string name="err_msg_invalid_email">E-mail inválido</string>
+    <string name="err_msg_short_password">A senha deve possuir de 6 a 22 caracteres</string>
+    <string name="err_msg_dont_match_password">As senhas não são iguais</string>
+    <string name="err_msg_invalid_birthday">Data de nascimento inválida</string>
+    <string name="err_msg_must_select_one">Selecione uma opção</string>
+    <string name="err_msg_invalid_phone">Número inválido</string>
+
+    <string-array name="array_states">
+        <item>Acre</item>
+        <item>Alagoas</item>
+        <item>Amapá</item>
+        <item>Bahia</item>
+        <item>Ceará</item>
+        <item>Distrito Federal</item>
+        <item>Espírito Santo</item>
+        <item>Goiás</item>
+        <item>Maranhão</item>
+        <item>Mato Grosso</item>
+        <item>Mato Grosso do Sul</item>
+        <item>Minas Gerais</item>
+        <item>Pará</item>
+        <item>Paraíba</item>
+        <item>Paraná</item>
+        <item>Pernambuco</item>
+        <item>Piauí</item>
+        <item>Rio de Janeiro</item>
+        <item>Rio Grande do Norte</item>
+        <item>Rio Grande do Sul</item>
+        <item>Rondônia</item>
+        <item>Roraima</item>
+        <item>Santa Catarina</item>
+        <item>São Paulo</item>
+        <item>Sergipe</item>
+        <item>Tocantins</item>
+    </string-array>
 </resources>
