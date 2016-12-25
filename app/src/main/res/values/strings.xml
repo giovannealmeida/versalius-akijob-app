@@ -40,10 +40,13 @@
     <string name="err_msg_must_select_one">Selecione uma opção</string>
     <string name="err_msg_invalid_phone">Número inválido</string>
 
+    <!--Arrays-->
     <string-array name="array_states">
+        <item>Selecione um estado...</item> <!-- Valor default -->
         <item>Acre</item>
         <item>Alagoas</item>
         <item>Amapá</item>
+        <item>Amazonas</item>
         <item>Bahia</item>
         <item>Ceará</item>
         <item>Distrito Federal</item>
@@ -64,8 +67,68 @@
         <item>Rondônia</item>
         <item>Roraima</item>
         <item>Santa Catarina</item>
-        <item>São Paulo</item>
         <item>Sergipe</item>
+        <item>São Paulo</item>
         <item>Tocantins</item>
+    </string-array>
+    <string-array name="array_states_uf">
+        <item>UF</item> <!-- Valor default -->
+        <item>AC</item>
+        <item>AL</item>
+        <item>AP</item>
+        <item>AM</item>
+        <item>BA</item>
+        <item>CE</item>
+        <item>DF</item>
+        <item>ES</item>
+        <item>GO</item>
+        <item>MA</item>
+        <item>MT</item>
+        <item>MS</item>
+        <item>MG</item>
+        <item>PA</item>
+        <item>PB</item>
+        <item>PR</item>
+        <item>PE</item>
+        <item>PI</item>
+        <item>RJ</item>
+        <item>RN</item>
+        <item>RS</item>
+        <item>RO</item>
+        <item>RR</item>
+        <item>SC</item>
+        <item>SE</item>
+        <item>SP</item>
+        <item>TO</item>
+    </string-array>
+    <string-array name="array_states_id">
+        <item>0</item> <!-- Valor default -->
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+        <item>24</item>
+        <item>25</item>
+        <item>26</item>
+        <item>27</item>
     </string-array>
 </resources>

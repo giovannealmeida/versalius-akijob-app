@@ -8,19 +8,33 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
+
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
 import br.com.versalius.akijob.R;
+import br.com.versalius.akijob.network.NetworkHelper;
+import br.com.versalius.akijob.network.ResponseCallback;
+import br.com.versalius.akijob.utils.ProgressDialogHelper;
 
 public class SingupActivity extends AppCompatActivity implements View.OnFocusChangeListener {
 
@@ -28,11 +42,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
     private TextInputLayout tilEmail;
     private TextInputLayout tilPassword;
     private TextInputLayout tilPasswordAgain;
-    private TextInputLayout tilBirthday;
     private TextInputLayout tilPhone;
-    private TextInputLayout tilSite;
-    private TextInputLayout tilFacebook;
-    private TextInputLayout tilTwitter;
 
     private EditText etName;
     private EditText etEmail;
@@ -40,13 +50,13 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
     private EditText etPasswordAgain;
     private EditText etBirthday;
     private EditText etPhone;
-    private EditText etSite;
-    private EditText etFacebook;
-    private EditText etTwitter;
 
     private RadioGroup rgGender;
     private RadioButton rbMale;
     private RadioButton rbFemale;
+
+    private ArrayAdapter<String> spCityArrayAdapter;
+    private ArrayList<String> spCityListData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +76,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         tilEmail = (TextInputLayout) findViewById(R.id.tilEmail);
         tilPassword = (TextInputLayout) findViewById(R.id.tilPassword);
         tilPasswordAgain = (TextInputLayout) findViewById(R.id.tilPasswordAgain);
-        tilBirthday = (TextInputLayout) findViewById(R.id.tilBirthday);
         tilPhone = (TextInputLayout) findViewById(R.id.tilPhone);
-        tilSite = (TextInputLayout) findViewById(R.id.tilSite);
-        tilTwitter = (TextInputLayout) findViewById(R.id.tilTwitter);
-        tilFacebook = (TextInputLayout) findViewById(R.id.tilFacebook);
 
         /* Instanciando campos */
         etName = (EditText) findViewById(R.id.etName);
@@ -79,9 +85,6 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         etPasswordAgain = (EditText) findViewById(R.id.etPasswordAgain);
         etBirthday = (EditText) findViewById(R.id.etBirthday);
         etPhone = (EditText) findViewById(R.id.etPhone);
-        etSite = (EditText) findViewById(R.id.etSite);
-        etTwitter = (EditText) findViewById(R.id.etTwitter);
-        etFacebook = (EditText) findViewById(R.id.etFacebook);
 
         /* Adicionando FocusListener*/
         etName.setOnFocusChangeListener(this);
@@ -209,24 +212,71 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
             }
         });
 
+        final Spinner spCity = (Spinner) findViewById(R.id.spCity);
+        spCity.setEnabled(false);
+        spCityListData = new ArrayList<>();
+        spCityListData.add("Selecione uma cidade...");
+        spCityArrayAdapter = new ArrayAdapter<String>(SingupActivity.this, android.R.layout.simple_spinner_dropdown_item, spCityListData);
+        spCity.setAdapter(spCityArrayAdapter);
+
+        final Spinner spState = (Spinner) findViewById(R.id.spState);
+        spState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                /* Carrega o array de ids */
+                String[] state_ids = getResources().getStringArray(R.array.array_states_id);
+                /* Através da posição do estado selecionado no spinner, descobre-se o id dele */
+                int selectedStateId = Integer.valueOf(state_ids[spState.getSelectedItemPosition()]);
+
+                /* Se o valor do item selecionado é 0, o item selecionado é "Selecione um estado...". Logo, não há seleção válida*/
+                if (selectedStateId == 0)
+                    return;
+
+                final ProgressDialogHelper progressHelper = new ProgressDialogHelper(SingupActivity.this);
+                progressHelper.createProgressSpinner("Aguarde", "Atualizando cidades", true, false);
+
+                NetworkHelper.getInstance(SingupActivity.this).getCities(selectedStateId, new ResponseCallback() {
+                    @Override
+                    public void onSuccess(JSONObject response) {
+                        try {
+                            spCityListData.clear();
+                            spCityListData.add("Selecione uma cidade...");
+                            JSONArray jArray = new JSONArray((String) response.get("data"));
+                            if (jArray != null) {
+                                for (int i = 0; i < jArray.length(); i++) {
+                                    spCityListData.add(jArray.getJSONObject(i).getString("name"));
+                                }
+                            }
+                            spCity.setEnabled(true);
+                            spCityArrayAdapter.notifyDataSetChanged();
+                            progressHelper.dismiss();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFail(VolleyError error) {
+                        Log.i("RESPONSE-FAIL", error.getMessage());
+                        progressHelper.dismiss();
+                    }
+                });
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         Button btSingUp = (Button) findViewById(R.id.btSingup);
         btSingUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clearErrors();
                 isValidForm();
             }
         });
-    }
-
-    /* Remove todas as mensagens de erro */
-    private void clearErrors() {
-        tilName.setErrorEnabled(false);
-        tilEmail.setErrorEnabled(false);
-        tilPassword.setErrorEnabled(false);
-        tilPasswordAgain.setErrorEnabled(false);
-        tilBirthday.setErrorEnabled(false);
-        (findViewById(R.id.tvRgErrMessage)).setVisibility(View.GONE);
     }
 
     /**
@@ -293,7 +343,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                 (phoneNumber.length < 2) ||
                 (phoneNumber[1].length() != 4) ||
                 (phoneNumber[0].length() != 8 &&
-                phoneNumber[0].length() != 9)){
+                        phoneNumber[0].length() != 9)) {
             tilPhone.setError(getResources().getString(R.string.err_msg_invalid_phone));
             return false;
         }
@@ -354,6 +404,13 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         return true;
     }
 
+    /**
+     * NÃO REMOVER DE NOVO!!!!
+     * Basicamente seta a ação de fechar a activity ao selecionar a seta na toolbar
+     *
+     * @param menuItem
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == android.R.id.home) {
@@ -384,4 +441,5 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
             }
         }
     }
+
 }
