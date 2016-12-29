@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 
 import br.com.versalius.akijob.R;
@@ -57,6 +58,10 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
 
     private ArrayAdapter<String> spCityArrayAdapter;
     private ArrayList<String> spCityListData;
+    private HashMap<String,String> cityIdList;
+
+    /* Form data */
+    private String cityId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -230,9 +235,16 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                 int selectedStateId = Integer.valueOf(state_ids[spState.getSelectedItemPosition()]);
 
                 /* Se o valor do item selecionado é 0, o item selecionado é "Selecione um estado...". Logo, não há seleção válida*/
-                if (selectedStateId == 0)
+                if (selectedStateId == 0) {
+                    spCityListData.clear();
+                    spCityListData.add(getResources().getString(R.string.hint_city_spinner));
+                    cityIdList.put(getResources().getString(R.string.hint_city_spinner),"0"); /* O id do primeiro item do spinner é nulo (ou seja, é zero)*/
+                    spCity.setEnabled(false);
+                    spCityArrayAdapter.notifyDataSetChanged();
                     return;
+                }
 
+                cityIdList = new HashMap<>();
                 final ProgressDialogHelper progressHelper = new ProgressDialogHelper(SingupActivity.this);
                 progressHelper.createProgressSpinner("Aguarde", "Atualizando cidades", true, false);
 
@@ -241,11 +253,13 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                     public void onSuccess(JSONObject response) {
                         try {
                             spCityListData.clear();
-                            spCityListData.add("Selecione uma cidade...");
+                            spCityListData.add(getResources().getString(R.string.hint_city_spinner));
+                            cityIdList.put(getResources().getString(R.string.hint_city_spinner),"0"); /* O id do primeiro item do spinner é nulo (ou seja, é zero)*/
                             JSONArray jArray = new JSONArray((String) response.get("data"));
                             if (jArray != null) {
                                 for (int i = 0; i < jArray.length(); i++) {
                                     spCityListData.add(jArray.getJSONObject(i).getString("name"));
+                                    cityIdList.put(jArray.getJSONObject(i).getString("name"),jArray.getJSONObject(i).getString("id"));
                                 }
                             }
                             spCity.setEnabled(true);

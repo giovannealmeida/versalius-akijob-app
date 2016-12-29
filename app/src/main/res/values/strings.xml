@@ -39,6 +39,7 @@
     <string name="err_msg_invalid_birthday">Data de nascimento inválida</string>
     <string name="err_msg_must_select_one">Selecione uma opção</string>
     <string name="err_msg_invalid_phone">Número inválido</string>
+    <string name="hint_city_spinner">Selecione uma cidade...</string>
 
     <!--Arrays-->
     <string-array name="array_states">
