@@ -234,6 +234,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                 /* Através da posição do estado selecionado no spinner, descobre-se o id dele */
                 int selectedStateId = Integer.valueOf(state_ids[spState.getSelectedItemPosition()]);
 
+                cityIdList = new HashMap<>();
                 /* Se o valor do item selecionado é 0, o item selecionado é "Selecione um estado...". Logo, não há seleção válida*/
                 if (selectedStateId == 0) {
                     spCityListData.clear();
@@ -244,18 +245,17 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                     return;
                 }
 
-                cityIdList = new HashMap<>();
                 final ProgressDialogHelper progressHelper = new ProgressDialogHelper(SingupActivity.this);
                 progressHelper.createProgressSpinner("Aguarde", "Atualizando cidades", true, false);
 
                 NetworkHelper.getInstance(SingupActivity.this).getCities(selectedStateId, new ResponseCallback() {
                     @Override
-                    public void onSuccess(JSONObject response) {
+                    public void onSuccess(String jsonStringResponse) {
                         try {
                             spCityListData.clear();
                             spCityListData.add(getResources().getString(R.string.hint_city_spinner));
                             cityIdList.put(getResources().getString(R.string.hint_city_spinner),"0"); /* O id do primeiro item do spinner é nulo (ou seja, é zero)*/
-                            JSONArray jArray = new JSONArray((String) response.get("data"));
+                            JSONArray jArray = new JSONArray(jsonStringResponse);
                             if (jArray != null) {
                                 for (int i = 0; i < jArray.length(); i++) {
                                     spCityListData.add(jArray.getJSONObject(i).getString("name"));

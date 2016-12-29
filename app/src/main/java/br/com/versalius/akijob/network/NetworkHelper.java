@@ -133,9 +133,9 @@ public class NetworkHelper {
                 method,
                 url,
                 params,
-                new Response.Listener<JSONObject>() {
+                new Response.Listener<String>() {
                     @Override
-                    public void onResponse(JSONObject response) {
+                    public void onResponse(String response) {
                         Log.i("onResponse - LOG", "response: " + response);
                         if (callback != null) {
                             callback.onSuccess(response);

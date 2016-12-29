@@ -21,13 +21,13 @@ import java.util.Map;
 /**
  * Created by Giovanne on 22/05/2016.
  */
-public class CustomRequest extends Request<JSONObject> {
+public class CustomRequest extends Request<String> {
 
-    private Listener<JSONObject> listener;
+    private Listener<String> listener;
     private Map<String, String> params;
 
     public CustomRequest(int method, String url, Map<String, String> params,
-                         Listener<JSONObject> reponseListener, ErrorListener errorListener) {
+                         Listener<String> reponseListener, ErrorListener errorListener) {
         super(method, url, errorListener);
         this.listener = reponseListener;
         this.params = params;
@@ -55,26 +55,24 @@ public class CustomRequest extends Request<JSONObject> {
     }
 
     @Override
-    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+    protected Response<String> parseNetworkResponse(NetworkResponse response) {
         try {
             String jsonString = new String(response.data,
                     HttpHeaderParser.parseCharset(response.headers));
 
-            /* Não sei se o que vem é JSONArray ou JSONObject. Encapsula num JSONObject e deixa o destinatário decidir o que fazer */
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("data",jsonString);
+//            /* Não sei se o que vem é JSONArray ou JSONObject. Encapsula num JSONObject e deixa o destinatário decidir o que fazer */
+//            JSONObject jsonObject = new JSONObject();
+//            jsonObject.put("data",jsonString);
 
-            return Response.success(jsonObject,
+            return Response.success(jsonString,
                     HttpHeaderParser.parseCacheHeaders(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
-        } catch (JSONException je) {
-            return Response.error(new ParseError(je));
         }
     }
 
     @Override
-    protected void deliverResponse(JSONObject response) {
+    protected void deliverResponse(String response) {
         listener.onResponse(response);
     }
 }
