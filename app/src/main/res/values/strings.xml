@@ -12,13 +12,16 @@
     <!--Hints-->
     <string name="hint_service">Serviço</string>
     <string name="hint_city">Cidade</string>
-    <string name="hint_email">E-mail</string>
+    <string name="hint_city_required">Cidade *</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_email_required">Email *</string>
     <string name="hint_password">Senha</string>
-    <string name="hint_full_name">Nome completo</string>
+    <string name="hint_password_required">Senha *</string>
+    <string name="hint_full_name">Nome Completo *</string>
     <string name="hint_password_again">Repita a senha</string>
-    <string name="hint_state">Estado</string>
-    <string name="hint_birth_date">Data de nascimento</string>
-    <string name="hint_phone">Telefone</string>
+    <string name="hint_state">Estado *</string>
+    <string name="hint_birth_date">Data de nascimento *</string>
+    <string name="hint_phone">Telefone *</string>
     <string name="hint_facebook">Facebook</string>
     <string name="hint_twitter">Twitter</string>
     <string name="hint_site">Site</string>
@@ -26,24 +29,32 @@
     <!--Labels-->
     <string name="lb_radio_male">Masculino</string>
     <string name="lb_radio_female">Feminino</string>
-    <string name="lb_gender">Sexo</string>
+    <string name="lb_gender">Sexo *</string>
+    <string name="lb_facebook">facebook.com/</string>
+    <string name="lb_twitter">twitter.com/</string>
+    <string name="lb_site">http://</string>
 
     <!--Mensagens de erros-->
     <string name="err_msg_service">Insira um serviço</string>
     <string name="err_msg_city">Insira uma cidade</string>
     <string name="err_msg_empty_name">Insira o nome completo</string>
     <string name="err_msg_empty_email">Insira um e-mail válido</string>
-    <string name="err_msg_invalid_email">E-mail inválido</string>
+    <string name="err_msg_invalid_email">Email inválido</string>
+    <string name="err_msg_invalid_site">Site inválido</string>
+    <string name="err_msg_invalid_facebook">Facebook inválido</string>
+    <string name="err_msg_invalid_twitter">Twitter inválido</string>
     <string name="err_msg_short_password">A senha deve possuir de 6 a 22 caracteres</string>
     <string name="err_msg_dont_match_password">As senhas não são iguais</string>
     <string name="err_msg_invalid_birthday">Data de nascimento inválida</string>
     <string name="err_msg_must_select_one">Selecione uma opção</string>
     <string name="err_msg_invalid_phone">Número inválido</string>
-    <string name="hint_city_spinner">Selecione uma cidade...</string>
+    <string name="hint_city_spinner">Selecione uma cidade…</string>
+    <string name="err_msg_must_select_city">Selecione uma cidade</string>
+    <string name="err_msg_must_select_state">Selecione um estado</string>
 
     <!--Arrays-->
     <string-array name="array_states">
-        <item>Selecione um estado...</item> <!-- Valor default -->
+        <item>Selecione um estado…</item> <!-- Valor default -->
         <item>Acre</item>
         <item>Alagoas</item>
         <item>Amapá</item>

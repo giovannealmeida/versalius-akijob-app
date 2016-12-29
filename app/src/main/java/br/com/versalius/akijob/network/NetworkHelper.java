@@ -11,8 +11,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -33,8 +31,8 @@ public class NetworkHelper {
 //    private final String DOMINIO = "http://192.168.1.106/akijob/api"; // Repo
 
     private final String LOGIN = "/login";
-    private final String FETCH_FORMS = "/fetchforms";
-    private final String UPDATE_FORMS = "/updateforms";
+    private final String SIGNUP = "/login_controller/register";
+    private final String CHECK_EMAIL = "/user_controller/email_check";
     private final String SEND_SURVEY = "/survey";
     private final String CITY = "/city_controller";
 
@@ -67,17 +65,6 @@ public class NetworkHelper {
         execute(Request.Method.POST, params, TAG, DOMINIO + LOGIN, callback);
     }
 
-    public void fetchForms(long userId, ResponseCallback callback) {
-        HashMap<String, String> params = new HashMap<>();
-        params.put("user_id", String.valueOf(userId));
-
-        execute(Request.Method.POST,
-                params,
-                TAG,
-                DOMINIO + FETCH_FORMS,
-                callback);
-    }
-
     public void getCities(long stateId, ResponseCallback callback) {
         HashMap<String, String> params = new HashMap<>();
         params.put("state_id", String.valueOf(stateId));
@@ -89,43 +76,35 @@ public class NetworkHelper {
                 callback);
     }
 
-    private String buildGetURL(String url, HashMap<String, String> params) {
-        url += "?";
-        Iterator it = params.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            url += pair.getKey() + "=" + pair.getValue();
-            it.remove(); // avoids a ConcurrentModificationException
-            if(it.hasNext()){
-                url += "&";
-            }
-        }
-        return url;
-    }
-
-    public void updateForms(String formsIds, ResponseCallback callback) {
-        HashMap<String, String> params = new HashMap<>();
-        params.put("forms_ids", formsIds);
-        Log.i("UPDATE FORMS", params.toString());
-
+    public void doSignUp(HashMap<String, String> params, ResponseCallback callback) {
         execute(Request.Method.POST,
                 params,
                 TAG,
-                DOMINIO + UPDATE_FORMS,
+                DOMINIO + SIGNUP,
                 callback);
     }
 
     /**
-     * Recebe as questões respondidas em JSON e envia para o servidor
+     * Verifica se o e-mail já existe.
+     * <p>
+     * TODO: Verificar o funcionamento desse controller (???)
+     * Testes realizados com os parâmetros (email e id existem no banco e estão relacionados):
+     * email_check?email=aphodyty_7@hotmail.com&user_id=108
+     * <p>
+     * Se somente um email é passado, dá erro.
+     * Se um email e um id de usuário que existem no banco são passados, retorna 'false'
+     * Se um email que não existe no banco e um id de usuário que existe são passados, retorna 'false'
+     * Se um email que existe no banco e um id de usuário que não existe são passados, retorna 'true'
      *
-     * @param response String JSON com as respostas
-     * @param callback Callback da requisição Volley
+     * @param params   - Email e id do usuário
+     * @param callback
      */
-    public void sendSurvey(String response, ResponseCallback callback) {
-        HashMap<String, String> params = new HashMap<>();
-        params.put("data", response);
-        Log.i("SendSurvey", "String enviada: " + params.toString());
-        execute(Request.Method.POST, params, TAG, DOMINIO + SEND_SURVEY, callback);
+    public void checkEmail(HashMap<String, String> params, ResponseCallback callback) {
+        execute(Request.Method.POST,
+                null,
+                TAG,
+                buildGetURL(DOMINIO + CHECK_EMAIL, params),
+                callback);
     }
 
     private void execute(int method, final HashMap params, String tag, String url, final ResponseCallback callback) {
@@ -154,6 +133,20 @@ public class NetworkHelper {
 
         request.setTag(tag);
         getRequestQueue().add(request);
+    }
+
+    private String buildGetURL(String url, HashMap<String, String> params) {
+        url += "?";
+        Iterator it = params.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            url += pair.getKey() + "=" + pair.getValue();
+            it.remove(); // avoids a ConcurrentModificationException
+            if (it.hasNext()) {
+                url += "&";
+            }
+        }
+        return url;
     }
 
     public static boolean isOnline(Context context) {

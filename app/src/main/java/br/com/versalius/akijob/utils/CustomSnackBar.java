@@ -12,11 +12,7 @@ import br.com.versalius.akijob.R;
  * Created by Giovanne on 02/07/2016.
  */
 public class CustomSnackBar {
-    public static final int ERROR = 0;
-    public static final int SUCCESS = 1;
-    public static final int INFO = 3;
-
-    private static Snackbar snackbar;
+        private static Snackbar snackbar;
 
     public static Snackbar make(ViewGroup view, String text, int duration, int type) {
         snackbar = Snackbar.make(view, text, duration);
@@ -26,17 +22,23 @@ public class CustomSnackBar {
         snackTextView.setTextColor(Color.rgb(255, 255, 255));
 
         switch (type){
-            case ERROR:
+            case SnackBarType.ERROR:
                 snackbar.getView().setBackgroundResource(R.color.snackBackgroundError);
                 break;
-            case SUCCESS:
+            case SnackBarType.SUCCESS:
                 snackbar.getView().setBackgroundResource(R.color.snackBackgroundSuccess);
                 break;
-            case INFO:
+            case SnackBarType.INFO:
                 snackbar.getView().setBackgroundResource(R.color.snackBackgroundInfo);
                 break;
         }
 
         return snackbar;
+    }
+
+    public class SnackBarType {
+        public static final int ERROR = 0;
+        public static final int SUCCESS = 1;
+        public static final int INFO = 3;
     }
 }

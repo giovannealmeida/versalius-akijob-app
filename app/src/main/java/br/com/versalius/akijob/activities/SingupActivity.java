@@ -2,6 +2,8 @@ package br.com.versalius.akijob.activities;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -9,6 +11,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,7 +27,6 @@ import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ import java.util.Locale;
 import br.com.versalius.akijob.R;
 import br.com.versalius.akijob.network.NetworkHelper;
 import br.com.versalius.akijob.network.ResponseCallback;
+import br.com.versalius.akijob.utils.CustomSnackBar;
 import br.com.versalius.akijob.utils.ProgressDialogHelper;
 
 public class SingupActivity extends AppCompatActivity implements View.OnFocusChangeListener {
@@ -44,6 +47,9 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
     private TextInputLayout tilPassword;
     private TextInputLayout tilPasswordAgain;
     private TextInputLayout tilPhone;
+    private TextInputLayout tilSite;
+    private TextInputLayout tilFacebook;
+    private TextInputLayout tilTwitter;
 
     private EditText etName;
     private EditText etEmail;
@@ -51,22 +57,31 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
     private EditText etPasswordAgain;
     private EditText etBirthday;
     private EditText etPhone;
+    private EditText etSite;
+    private EditText etFacebook;
+    private EditText etTwitter;
 
     private RadioGroup rgGender;
     private RadioButton rbMale;
     private RadioButton rbFemale;
 
+    private Spinner spCity;
+    private Spinner spState;
+
     private ArrayAdapter<String> spCityArrayAdapter;
     private ArrayList<String> spCityListData;
-    private HashMap<String,String> cityIdList;
+    private HashMap<String, String> cityIdList;
 
-    /* Form data */
-    private String cityId;
+    private CoordinatorLayout coordinatorLayout;
+
+    private HashMap<String, String> formData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singup);
+
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         getSupportActionBar().setLogo(R.drawable.toolbar_logo);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -82,6 +97,9 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         tilPassword = (TextInputLayout) findViewById(R.id.tilPassword);
         tilPasswordAgain = (TextInputLayout) findViewById(R.id.tilPasswordAgain);
         tilPhone = (TextInputLayout) findViewById(R.id.tilPhone);
+        tilSite = (TextInputLayout) findViewById(R.id.tilSite);
+        tilFacebook = (TextInputLayout) findViewById(R.id.tilFacebook);
+        tilTwitter = (TextInputLayout) findViewById(R.id.tilTwitter);
 
         /* Instanciando campos */
         etName = (EditText) findViewById(R.id.etName);
@@ -90,6 +108,9 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         etPasswordAgain = (EditText) findViewById(R.id.etPasswordAgain);
         etBirthday = (EditText) findViewById(R.id.etBirthday);
         etPhone = (EditText) findViewById(R.id.etPhone);
+        etSite = (EditText) findViewById(R.id.etSite);
+        etFacebook = (EditText) findViewById(R.id.etFacebook);
+        etTwitter = (EditText) findViewById(R.id.etTwitter);
 
         /* Adicionando FocusListener*/
         etName.setOnFocusChangeListener(this);
@@ -97,6 +118,9 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         etPassword.setOnFocusChangeListener(this);
         etPasswordAgain.setOnFocusChangeListener(this);
         etPhone.setOnFocusChangeListener(this);
+        etSite.setOnFocusChangeListener(this);
+        etFacebook.setOnFocusChangeListener(this);
+        etTwitter.setOnFocusChangeListener(this);
 
         /* Adicionando máscara */
         etPhone.addTextChangedListener(new TextWatcher() {
@@ -217,14 +241,14 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
             }
         });
 
-        final Spinner spCity = (Spinner) findViewById(R.id.spCity);
+        spCity = (Spinner) findViewById(R.id.spCity);
         spCity.setEnabled(false);
         spCityListData = new ArrayList<>();
         spCityListData.add("Selecione uma cidade...");
-        spCityArrayAdapter = new ArrayAdapter<String>(SingupActivity.this, android.R.layout.simple_spinner_dropdown_item, spCityListData);
+        spCityArrayAdapter = new ArrayAdapter<>(SingupActivity.this, android.R.layout.simple_spinner_dropdown_item, spCityListData);
         spCity.setAdapter(spCityArrayAdapter);
 
-        final Spinner spState = (Spinner) findViewById(R.id.spState);
+        spState = (Spinner) findViewById(R.id.spState);
         spState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -239,7 +263,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                 if (selectedStateId == 0) {
                     spCityListData.clear();
                     spCityListData.add(getResources().getString(R.string.hint_city_spinner));
-                    cityIdList.put(getResources().getString(R.string.hint_city_spinner),"0"); /* O id do primeiro item do spinner é nulo (ou seja, é zero)*/
+                    cityIdList.put(getResources().getString(R.string.hint_city_spinner), "0"); /* O id do primeiro item do spinner é nulo (ou seja, é zero)*/
                     spCity.setEnabled(false);
                     spCityArrayAdapter.notifyDataSetChanged();
                     return;
@@ -254,12 +278,12 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                         try {
                             spCityListData.clear();
                             spCityListData.add(getResources().getString(R.string.hint_city_spinner));
-                            cityIdList.put(getResources().getString(R.string.hint_city_spinner),"0"); /* O id do primeiro item do spinner é nulo (ou seja, é zero)*/
+                            cityIdList.put(getResources().getString(R.string.hint_city_spinner), "0"); /* O id do primeiro item do spinner é nulo (ou seja, é zero)*/
                             JSONArray jArray = new JSONArray(jsonStringResponse);
                             if (jArray != null) {
                                 for (int i = 0; i < jArray.length(); i++) {
                                     spCityListData.add(jArray.getJSONObject(i).getString("name"));
-                                    cityIdList.put(jArray.getJSONObject(i).getString("name"),jArray.getJSONObject(i).getString("id"));
+                                    cityIdList.put(jArray.getJSONObject(i).getString("name"), jArray.getJSONObject(i).getString("id"));
                                 }
                             }
                             spCity.setEnabled(true);
@@ -288,7 +312,24 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         btSingUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isValidForm();
+                if (NetworkHelper.isOnline(SingupActivity.this)) {
+                    if (isValidForm()) {
+                        NetworkHelper.getInstance(SingupActivity.this).doSignUp(formData, new ResponseCallback() {
+                            @Override
+                            public void onSuccess(String jsonStringResponse) {
+                                CustomSnackBar.make(coordinatorLayout, "Cadastro realizado com sucesso", Snackbar.LENGTH_SHORT, CustomSnackBar.SnackBarType.SUCCESS).show();
+                                finish();
+                            }
+
+                            @Override
+                            public void onFail(VolleyError error) {
+                                CustomSnackBar.make(coordinatorLayout, "Falha ao realizar cadastro", Snackbar.LENGTH_LONG, CustomSnackBar.SnackBarType.ERROR).show();
+                            }
+                        });
+                    }
+                } else {
+                    CustomSnackBar.make(coordinatorLayout, "Você está offline", Snackbar.LENGTH_LONG, CustomSnackBar.SnackBarType.ERROR).show();
+                }
             }
         });
     }
@@ -297,11 +338,15 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
      * Valida os campos do formulário setando mensagens de erro
      */
     private boolean isValidForm() {
+        formData = new HashMap<>();
+
         boolean isFocusRequested = false;
         /* Verifica se o campo Nome */
         if (!hasValidName()) {
             tilName.requestFocus();
             isFocusRequested = true;
+        } else {
+            formData.put("name", etName.getText().toString());
         }
 
         /* Verifica o campo de e-mail*/
@@ -310,6 +355,8 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                 tilEmail.requestFocus();
                 isFocusRequested = true;
             }
+        } else {
+            formData.put("email", etEmail.getText().toString());
         }
 
         /* Verifica o campo de senha*/
@@ -326,6 +373,8 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                 tilPasswordAgain.requestFocus();
                 isFocusRequested = true;
             }
+        } else {
+            formData.put("password", etPassword.getText().toString());
         }
 
         /* Verifica se os radio buttons estão descelecionados*/
@@ -334,6 +383,12 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                 rgGender.requestFocus();
                 isFocusRequested = true;
             }
+        } else {
+            if (rbFemale.isChecked()) {
+                formData.put("gender_id", "2");
+            } else {
+                formData.put("gender_id", "1");
+            }
         }
 
         /* Verifica o campo de telefone*/
@@ -341,6 +396,26 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
             if (!isFocusRequested) {
                 tilPhone.requestFocus();
                 isFocusRequested = true;
+            }
+        } else {
+            formData.put("phone", etPhone.getText().toString());
+        }
+
+        /* Verifica o spinner de estado*/
+        if (!hasValidState()) {
+            if (!isFocusRequested) {
+                spState.requestFocus();
+                isFocusRequested = true;
+            }
+        } else {
+            /* Verifica o spinner de cidade*/
+            if (!hasValidCity()) {
+                if (!isFocusRequested) {
+                    spCity.requestFocus();
+                    isFocusRequested = true;
+                }
+            } else {
+                formData.put("city_id", cityIdList.get(spCityListData.get(spCity.getSelectedItemPosition())));
             }
         }
 
@@ -418,6 +493,54 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         return true;
     }
 
+    private boolean hasValidState() {
+        if (spState.getSelectedItemPosition() == 0) {
+            (findViewById(R.id.tvSpStateErrMessage)).setVisibility(View.VISIBLE);
+            return false;
+        }
+        (findViewById(R.id.tvSpStateErrMessage)).setVisibility(View.GONE);
+        return true;
+    }
+
+    private boolean hasValidCity() {
+        if (spCity.getSelectedItemPosition() == 0) {
+            (findViewById(R.id.tvSpCityErrMessage)).setVisibility(View.VISIBLE);
+            return false;
+        }
+        (findViewById(R.id.tvSpCityErrMessage)).setVisibility(View.GONE);
+        return true;
+    }
+
+    private boolean hasValidSite() {
+        String site = etSite.getText().toString().trim();
+        if (!TextUtils.isEmpty(site) && !Patterns.WEB_URL.matcher(site).matches()) {
+            tilSite.setError(getResources().getString(R.string.err_msg_invalid_site));
+            return false;
+        }
+        tilSite.setErrorEnabled(false);
+        return true;
+    }
+
+    private boolean hasValidFacebook() {
+        String facebook = etFacebook.getText().toString().trim();
+        if (!TextUtils.isEmpty(facebook) && !facebook.matches("[A-Za-z0-9.]{5,}")) {
+            tilFacebook.setError(getResources().getString(R.string.err_msg_invalid_facebook));
+            return false;
+        }
+        tilFacebook.setErrorEnabled(false);
+        return true;
+    }
+
+    private boolean hasValidTwitter() {
+        String twitter = etTwitter.getText().toString().trim();
+        if (!TextUtils.isEmpty(twitter) && !twitter.matches("[A-Za-z0-9_]{5,}")) {
+            tilTwitter.setError(getResources().getString(R.string.err_msg_invalid_twitter));
+            return false;
+        }
+        tilTwitter.setErrorEnabled(false);
+        return true;
+    }
+
     /**
      * NÃO REMOVER DE NOVO!!!!
      * Basicamente seta a ação de fechar a activity ao selecionar a seta na toolbar
@@ -451,6 +574,15 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                     break;
                 case R.id.etPhone:
                     hasValidPhone();
+                    break;
+                case R.id.etSite:
+                    hasValidSite();
+                    break;
+                case R.id.etFacebook:
+                    hasValidFacebook();
+                    break;
+                case R.id.etTwitter:
+                    hasValidTwitter();
                     break;
             }
         }
