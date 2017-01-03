@@ -51,6 +51,8 @@
     <string name="hint_city_spinner">Selecione uma cidade…</string>
     <string name="err_msg_must_select_city">Selecione uma cidade</string>
     <string name="err_msg_must_select_state">Selecione um estado</string>
+    <string name="err_msg_existing_email">Este email já está em uso</string>
+    <string name="err_msg_server_fail">Houve uma falha. Tente novamente mais tarde.</string>
 
     <!--Arrays-->
     <string-array name="array_states">

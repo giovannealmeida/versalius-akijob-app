@@ -96,11 +96,14 @@ public class NetworkHelper {
      * Se um email que não existe no banco e um id de usuário que existe são passados, retorna 'false'
      * Se um email que existe no banco e um id de usuário que não existe são passados, retorna 'true'
      *
-     * @param params   - Email e id do usuário
+     * @param email   - Email e id do usuário
      * @param callback
      */
-    public void checkEmail(HashMap<String, String> params, ResponseCallback callback) {
-        execute(Request.Method.POST,
+    public void emailExists(String email, ResponseCallback callback) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("email", email);
+
+        execute(Request.Method.GET,
                 null,
                 TAG,
                 buildGetURL(DOMINIO + CHECK_EMAIL, params),

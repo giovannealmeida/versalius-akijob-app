@@ -1,10 +1,12 @@
 package br.com.versalius.akijob.activities;
 
 import android.app.DatePickerDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputType;
@@ -19,6 +21,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -27,6 +31,7 @@ import com.android.volley.VolleyError;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -473,13 +478,45 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
     }
 
     private boolean hasValidEmail() {
-        if (TextUtils.isEmpty(etEmail.getText().toString().trim())) {
+        String email = etEmail.getText().toString().trim();
+        if (TextUtils.isEmpty(email)) {
             tilEmail.setError(getResources().getString(R.string.err_msg_empty_email));
             return false;
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(etEmail.getText()).matches()) {
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             tilEmail.setError(getResources().getString(R.string.err_msg_invalid_email));
             return false;
         }
+
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.pbEmailCheck);
+        findViewById(R.id.ivEmailCheck).setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        NetworkHelper.getInstance(this).emailExists(email, new ResponseCallback() {
+            @Override
+            public void onSuccess(String jsonStringResponse) {
+                findViewById(R.id.ivEmailCheck).setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+                try {
+                    JSONObject json = new JSONObject(jsonStringResponse);
+                    if(json.getBoolean("status")){ /* O email existe */
+                        tilEmail.setError(getResources().getString(R.string.err_msg_existing_email));
+                        ((ImageView)findViewById(R.id.ivEmailCheck)).setImageDrawable(ContextCompat.getDrawable(SingupActivity.this, R.drawable.ic_close_circle));
+                        ((ImageView)findViewById(R.id.ivEmailCheck)).setColorFilter(Color.argb(255, 239,83,80));
+                    } else {
+                        ((ImageView)findViewById(R.id.ivEmailCheck)).setImageDrawable(ContextCompat.getDrawable(SingupActivity.this, R.drawable.ic_check));
+                        ((ImageView)findViewById(R.id.ivEmailCheck)).setColorFilter(Color.argb(255, 0,192,96));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFail(VolleyError error) {
+                tilEmail.setError(getResources().getString(R.string.err_msg_server_fail));
+                findViewById(R.id.ivEmailCheck).setVisibility(View.VISIBLE);
+            }
+        });
+
         tilEmail.setErrorEnabled(false);
         return true;
     }

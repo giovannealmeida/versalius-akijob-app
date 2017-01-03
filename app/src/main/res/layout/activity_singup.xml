@@ -37,20 +37,44 @@
                     android:inputType="textCapWords" />
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/tilEmail"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/etEmail"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilEmail"
+                    android:layout_weight="1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginTop="4dp"
-                    android:hint="@string/hint_email_required"
-                    android:inputType="textEmailAddress" />
-            </android.support.design.widget.TextInputLayout>
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginTop="4dp"
+                        android:hint="@string/hint_email_required"
+                        android:inputType="textEmailAddress" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <ProgressBar
+                    android:id="@+id/pbEmailCheck"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:focusable="false"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/ivEmailCheck"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:focusable="false"
+                    android:src="@drawable/ic_check"
+                    android:tint="#ccc" />
+            </LinearLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/tilPassword"
