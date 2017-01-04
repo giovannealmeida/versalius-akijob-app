@@ -21,6 +21,31 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="25dp"
+                android:layout_gravity="center_horizontal">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivProfile"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_below="@+id/view"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:src="@drawable/ic_pic_placeholder"
+                    app:civ_border_width="2dp"
+                    app:civ_border_color="#FF000000" />
+                <ImageButton
+                    android:id="@+id/btGetImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_camera"
+                    android:padding="7dp"
+                    android:background="@drawable/circular_button"
+                    android:layout_gravity="bottom|end"/>
+            </FrameLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/tilName"

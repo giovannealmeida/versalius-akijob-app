@@ -1,17 +1,28 @@
 package br.com.versalius.akijob.activities;
 
+import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
@@ -21,18 +32,24 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.android.volley.VolleyError;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,6 +61,7 @@ import br.com.versalius.akijob.network.NetworkHelper;
 import br.com.versalius.akijob.network.ResponseCallback;
 import br.com.versalius.akijob.utils.CustomSnackBar;
 import br.com.versalius.akijob.utils.ProgressDialogHelper;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SingupActivity extends AppCompatActivity implements View.OnFocusChangeListener {
 
@@ -81,11 +99,18 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
 
     private HashMap<String, String> formData;
 
+    private MaterialDialog mMaterialDialog;
+    private CircleImageView ivProfile;
+
+    private static final int ACTION_RESULT_GET_IMAGE = 1000;
+    private static final int REQUEST_PERMISSION_CODE = 1001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singup);
-
+        EventBus.getDefault().register(this);
+        formData = new HashMap<>();
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
 
         getSupportActionBar().setLogo(R.drawable.toolbar_logo);
@@ -96,6 +121,28 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
     }
 
     private void setUpViews() {
+        ivProfile = (CircleImageView) findViewById(R.id.ivProfile);
+        /* Pegar imagem */
+        ImageButton btGetImage = (ImageButton) findViewById(R.id.btGetImage);
+        btGetImage.setOnClickListener(new View.OnClickListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onClick(View view) {
+                if(ContextCompat.checkSelfPermission(SingupActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                        PackageManager.PERMISSION_GRANTED) {
+                    Intent i = new Intent(Intent.ACTION_PICK);
+                    i.setType("image/*");
+                    startActivityForResult(i, ACTION_RESULT_GET_IMAGE);
+                } else {
+                    if(ActivityCompat.shouldShowRequestPermissionRationale(SingupActivity.this,android.Manifest.permission.READ_EXTERNAL_STORAGE)){
+                        callDialog("O AkiJob precisa de permissão para acessar os arquivos do dispositivo",new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE});
+                    } else {
+                        ActivityCompat.requestPermissions(SingupActivity.this,new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},REQUEST_PERMISSION_CODE);
+                    }
+                }
+            }
+        });
+
         /* Instanciando layouts */
         tilName = (TextInputLayout) findViewById(R.id.tilName);
         tilEmail = (TextInputLayout) findViewById(R.id.tilEmail);
@@ -322,8 +369,18 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                         NetworkHelper.getInstance(SingupActivity.this).doSignUp(formData, new ResponseCallback() {
                             @Override
                             public void onSuccess(String jsonStringResponse) {
-                                CustomSnackBar.make(coordinatorLayout, "Cadastro realizado com sucesso", Snackbar.LENGTH_SHORT, CustomSnackBar.SnackBarType.SUCCESS).show();
-                                finish();
+                                try {
+                                    JSONObject jsonObject = new JSONObject(jsonStringResponse);
+                                    if(jsonObject.getBoolean("status")){
+                                        CustomSnackBar.make(coordinatorLayout, "Cadastro realizado com sucesso", Snackbar.LENGTH_SHORT, CustomSnackBar.SnackBarType.SUCCESS).show();
+                                    } else {
+                                        CustomSnackBar.make(coordinatorLayout, "Falha ao realizar cadastro", Snackbar.LENGTH_LONG, CustomSnackBar.SnackBarType.ERROR).show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    finish();
+                                }
                             }
 
                             @Override
@@ -343,7 +400,6 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
      * Valida os campos do formulário setando mensagens de erro
      */
     private boolean isValidForm() {
-        formData = new HashMap<>();
 
         boolean isFocusRequested = false;
         /* Verifica se o campo Nome */
@@ -625,4 +681,62 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == ACTION_RESULT_GET_IMAGE && resultCode == RESULT_OK){
+            Uri selectedImage = data.getData();
+            //Com base na URI da imagem selecionada, prepara o acesso ao banco de dados interno pra pegar a imagem
+            String[] columns = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(selectedImage,columns,null,null,null);
+            cursor.moveToFirst();
+
+            int columnIndex = cursor.getColumnIndex(columns[0]);
+            String imagePath = cursor.getString(columnIndex);
+            cursor.close();
+
+            //Passa o caminho da imagem pra activity que vai fazer o crop
+            startActivity(new Intent(this,CropActivity.class).putExtra("imagePath",imagePath));
+        }
+    }
+
+    private void callDialog( String message, final String[] permissions ){
+        mMaterialDialog = new MaterialDialog.Builder(this)
+                .title(R.string.title_dialog_permission)
+                .content(message)
+                .positiveText(R.string.dialog_permission_agree_button)
+                .negativeText(R.string.dialog_permission_disagree_button)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        ActivityCompat.requestPermissions(SingupActivity.this, permissions, REQUEST_PERMISSION_CODE);
+                        mMaterialDialog.dismiss();
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        mMaterialDialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    /* O EventBus é usado somente pra trazer a imagem cortada de volta pra cá */
+    @Subscribe
+    public void onEvent(Bitmap bitmap) {
+        /* Preview da imagem */
+        ivProfile.setImageBitmap(bitmap);
+
+        /* Codifica a imagem pra envio */
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageBytes = baos.toByteArray();
+        formData.put("avatar",Base64.encodeToString(imageBytes, Base64.DEFAULT));
+    }
+
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
 }
