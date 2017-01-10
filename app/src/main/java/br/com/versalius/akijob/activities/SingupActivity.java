@@ -364,27 +364,30 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         btSingUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                final ProgressDialogHelper progressHelper = new ProgressDialogHelper(SingupActivity.this);
+                progressHelper.createProgressSpinner("Aguarde", "Realizando cadastro", true, false);
                 if (NetworkHelper.isOnline(SingupActivity.this)) {
                     if (isValidForm()) {
                         NetworkHelper.getInstance(SingupActivity.this).doSignUp(formData, new ResponseCallback() {
                             @Override
                             public void onSuccess(String jsonStringResponse) {
                                 try {
+                                    progressHelper.dismiss();
                                     JSONObject jsonObject = new JSONObject(jsonStringResponse);
                                     if(jsonObject.getBoolean("status")){
                                         CustomSnackBar.make(coordinatorLayout, "Cadastro realizado com sucesso", Snackbar.LENGTH_SHORT, CustomSnackBar.SnackBarType.SUCCESS).show();
+                                        finish();
                                     } else {
                                         CustomSnackBar.make(coordinatorLayout, "Falha ao realizar cadastro", Snackbar.LENGTH_LONG, CustomSnackBar.SnackBarType.ERROR).show();
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
-                                } finally {
-                                    finish();
                                 }
                             }
 
                             @Override
                             public void onFail(VolleyError error) {
+                                progressHelper.dismiss();
                                 CustomSnackBar.make(coordinatorLayout, "Falha ao realizar cadastro", Snackbar.LENGTH_LONG, CustomSnackBar.SnackBarType.ERROR).show();
                             }
                         });
