@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if(requestCode == REGISTER_CODE){
             if(resultCode == Activity.RESULT_OK){
-                CustomSnackBar.make((CoordinatorLayout)findViewById(R.id.coordinatorLayout), "Cadastro realizado com sucesso", Snackbar.LENGTH_SHORT, CustomSnackBar.SnackBarType.SUCCESS).show();
+                CustomSnackBar.make((CoordinatorLayout)findViewById(R.id.coordinatorLayout), "Cadastro realizado com sucesso", Snackbar.LENGTH_LONG, CustomSnackBar.SnackBarType.SUCCESS).show();
             }
         }
     }
