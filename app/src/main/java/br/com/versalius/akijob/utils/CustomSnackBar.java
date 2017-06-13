@@ -12,10 +12,9 @@ import br.com.versalius.akijob.R;
  * Created by Giovanne on 02/07/2016.
  */
 public class CustomSnackBar {
-        private static Snackbar snackbar;
 
     public static Snackbar make(ViewGroup view, String text, int duration, int type) {
-        snackbar = Snackbar.make(view, text, duration);
+        Snackbar snackbar = Snackbar.make(view, text, duration);
         TextView snackTextView = (TextView) snackbar
                 .getView()
                 .findViewById(android.support.design.R.id.snackbar_text);

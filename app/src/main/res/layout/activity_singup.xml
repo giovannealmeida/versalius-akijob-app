@@ -101,6 +101,46 @@
                     android:tint="#ccc" />
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilCpf"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/etCpf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginTop="4dp"
+                        android:maxLength="14"
+                        android:hint="@string/hint_cpf_required"
+                        android:inputType="phone" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <ProgressBar
+                    android:id="@+id/pbCpfCheck"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:focusable="false"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/ivCpfCheck"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:focusable="false"
+                    android:src="@drawable/ic_check"
+                    android:tint="#ccc" />
+            </LinearLayout>
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/tilPassword"
                 android:layout_width="match_parent"

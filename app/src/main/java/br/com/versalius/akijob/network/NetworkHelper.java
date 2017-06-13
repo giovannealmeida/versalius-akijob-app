@@ -27,14 +27,14 @@ public class NetworkHelper {
     private static Context context;
     private RequestQueue requestQueue;
 
-    private final String DOMINIO = "http://devakijob.versalius.com.br/api"; // Remoto
-//    private final String DOMINIO = "http://192.168.1.106/akijob/api"; // Repo
+    private final String DOMINIO = "http://devakijob.versalius.com.br/api/api"; // Remoto
+//    private final String DOMINIO = "http://10.1.1.104/akijob/api"; // Repo
 
     private final String LOGIN = "/login";
     private final String SIGNUP = "/login_controller/register";
-    private final String CHECK_EMAIL = "/user_controller/email_check";
-    private final String SEND_SURVEY = "/survey";
-    private final String CITY = "/city_controller";
+    private final String CHECK_EMAIL = "/login_controller/email_check";
+    private final String CHECK_CPF = "/login_controller/cpf_check";
+    private final String CITY = "/City_controller";
 
     private NetworkHelper(Context context) {
         this.context = context;
@@ -107,6 +107,28 @@ public class NetworkHelper {
                 null,
                 TAG,
                 buildGetURL(DOMINIO + CHECK_EMAIL, params),
+                callback);
+    }
+
+    /**
+     * Verifica se o CPF já existe.
+     *
+     * O CPF deve ser passado com máscara no formado 999.999.999-99
+     *
+     * Se um CPF que não existe no banco é passado, retorna 'false',
+     * do contrário restorna 'true'
+     *
+     * @param cpf   - CPF do usuário
+     * @param callback
+     */
+    public void cpfExists(String cpf, ResponseCallback callback) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("cpf", cpf);
+
+        execute(Request.Method.GET,
+                null,
+                TAG,
+                buildGetURL(DOMINIO + CHECK_CPF, params),
                 callback);
     }
 

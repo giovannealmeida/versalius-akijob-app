@@ -10,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
+
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,9 +45,10 @@ public class CustomRequest extends Request<String> {
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         HashMap<String, String> params = new HashMap<String, String>();
-        String creds = String.format("%s:%s","admin","1234");
+        String creds = String.format("%s:%s", "admin", "1234");
         String auth = "Basic " + Base64.encodeToString(creds.getBytes(), Base64.DEFAULT);
         params.put("Authorization", auth);
+        params.put("X-API-KEY", "o0ogk4wwc0so88480go48kcog44osokksosw4448");
         return params;
     }
 
@@ -55,7 +57,7 @@ public class CustomRequest extends Request<String> {
         try {
             String jsonString = new String(response.data,
                     HttpHeaderParser.parseCharset(response.headers));
-
+//Todo: Arrumar essa gambiarra
 //            /* Não sei se o que vem é JSONArray ou JSONObject. Encapsula num JSONObject e deixa o destinatário decidir o que fazer */
 //            JSONObject jsonObject = new JSONObject();
 //            jsonObject.put("data",jsonString);

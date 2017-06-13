@@ -1,7 +1,10 @@
 package br.com.versalius.akijob.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -10,8 +13,11 @@ import android.view.View;
 import android.widget.Button;
 
 import br.com.versalius.akijob.R;
+import br.com.versalius.akijob.utils.CustomSnackBar;
 
 public class LoginActivity extends AppCompatActivity {
+
+    private static final int REGISTER_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
         singup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this,SingupActivity.class));
+                startActivityForResult(new Intent(LoginActivity.this,SingupActivity.class),REGISTER_CODE);
 //                finish();
             }
         });
@@ -38,5 +44,16 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REGISTER_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                CustomSnackBar.make((CoordinatorLayout)findViewById(R.id.coordinatorLayout), "Cadastro realizado com sucesso", Snackbar.LENGTH_SHORT, CustomSnackBar.SnackBarType.SUCCESS).show();
+            }
+        }
     }
 }

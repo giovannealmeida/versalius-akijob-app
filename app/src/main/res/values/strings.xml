@@ -16,6 +16,7 @@
     <string name="hint_city_required">Cidade *</string>
     <string name="hint_email">Email</string>
     <string name="hint_email_required">Email *</string>
+    <string name="hint_cpf_required">CPF *</string>
     <string name="hint_password">Senha</string>
     <string name="hint_password_required">Senha *</string>
     <string name="hint_full_name">Nome Completo *</string>
@@ -40,6 +41,7 @@
     <string name="err_msg_city">Insira uma cidade</string>
     <string name="err_msg_empty_name">Insira o nome completo</string>
     <string name="err_msg_empty_email">Insira um e-mail válido</string>
+    <string name="err_msg_empty_cpf">Insira um CPF válido</string>
     <string name="err_msg_invalid_email">Email inválido</string>
     <string name="err_msg_invalid_site">Site inválido</string>
     <string name="err_msg_invalid_facebook">Facebook inválido</string>
@@ -57,6 +59,8 @@
     <string name="dialog_permission_agree_button">Ok</string>
     <string name="dialog_permission_disagree_button">Cancelar</string>
     <string name="title_crop_activity">Cortar Imagem</string>
+    <string name="err_msg_invalid_cpf">CPF inválido</string>
+    <string name="err_msg_existing_cpf">Este CPF já está cadastrado</string>
 
     <!--Arrays-->
     <string-array name="array_states">

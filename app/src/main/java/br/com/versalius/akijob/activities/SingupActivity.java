@@ -1,6 +1,7 @@
 package br.com.versalius.akijob.activities;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -55,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import br.com.versalius.akijob.R;
 import br.com.versalius.akijob.network.NetworkHelper;
@@ -67,6 +69,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
 
     private TextInputLayout tilName;
     private TextInputLayout tilEmail;
+    private TextInputLayout tilCpf;
     private TextInputLayout tilPassword;
     private TextInputLayout tilPasswordAgain;
     private TextInputLayout tilPhone;
@@ -76,6 +79,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
 
     private EditText etName;
     private EditText etEmail;
+    private EditText etCpf;
     private EditText etPassword;
     private EditText etPasswordAgain;
     private EditText etBirthday;
@@ -128,16 +132,16 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View view) {
-                if(ContextCompat.checkSelfPermission(SingupActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                if (ContextCompat.checkSelfPermission(SingupActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE) ==
                         PackageManager.PERMISSION_GRANTED) {
                     Intent i = new Intent(Intent.ACTION_PICK);
                     i.setType("image/*");
                     startActivityForResult(i, ACTION_RESULT_GET_IMAGE);
                 } else {
-                    if(ActivityCompat.shouldShowRequestPermissionRationale(SingupActivity.this,android.Manifest.permission.READ_EXTERNAL_STORAGE)){
-                        callDialog("O AkiJob precisa de permissão para acessar os arquivos do dispositivo",new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE});
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(SingupActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        callDialog("O AkiJob precisa de permissão para acessar os arquivos do dispositivo", new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE});
                     } else {
-                        ActivityCompat.requestPermissions(SingupActivity.this,new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},REQUEST_PERMISSION_CODE);
+                        ActivityCompat.requestPermissions(SingupActivity.this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_PERMISSION_CODE);
                     }
                 }
             }
@@ -146,6 +150,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         /* Instanciando layouts */
         tilName = (TextInputLayout) findViewById(R.id.tilName);
         tilEmail = (TextInputLayout) findViewById(R.id.tilEmail);
+        tilCpf = (TextInputLayout) findViewById(R.id.tilCpf);
         tilPassword = (TextInputLayout) findViewById(R.id.tilPassword);
         tilPasswordAgain = (TextInputLayout) findViewById(R.id.tilPasswordAgain);
         tilPhone = (TextInputLayout) findViewById(R.id.tilPhone);
@@ -156,6 +161,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         /* Instanciando campos */
         etName = (EditText) findViewById(R.id.etName);
         etEmail = (EditText) findViewById(R.id.etEmail);
+        etCpf = (EditText) findViewById(R.id.etCpf);
         etPassword = (EditText) findViewById(R.id.etPassword);
         etPasswordAgain = (EditText) findViewById(R.id.etPasswordAgain);
         etBirthday = (EditText) findViewById(R.id.etBirthday);
@@ -167,6 +173,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         /* Adicionando FocusListener*/
         etName.setOnFocusChangeListener(this);
         etEmail.setOnFocusChangeListener(this);
+        etCpf.setOnFocusChangeListener(this);
         etPassword.setOnFocusChangeListener(this);
         etPasswordAgain.setOnFocusChangeListener(this);
         etPhone.setOnFocusChangeListener(this);
@@ -257,6 +264,60 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
             }
         });
 
+        etCpf.addTextChangedListener(new TextWatcher() {
+            boolean isErasing = false;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                /* Se depois da mudança não serão acrescidos caracteres, está apagando */
+                isErasing = (after == 0);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String lastChar = "";
+                int digits = etCpf.getText().toString().length();
+                /* Se não está apagando, verifica se algo precisa ser adicionado */
+                if (!isErasing) {
+                    if (digits > 0) {
+                        lastChar = etCpf.getText().toString().substring(digits - 1);
+                    }
+                    switch (digits) {
+                        case 3:
+                            etCpf.append(".");
+                            break;
+                        /* Quando o "." é apagado */
+                        case 4:
+                        case 8:
+                            if (!lastChar.equals(".")) {
+                                String currentDigits = etCpf.getText().toString().substring(0, digits - 1);
+                                etCpf.setText("");
+                                etCpf.append(currentDigits + "." + lastChar);
+                            }
+                            break;
+                        case 7:
+                            etCpf.append(".");
+                            break;
+                        case 11:
+                            etCpf.append("-");
+                            break;
+                        /* Quando o "-" é apagado 999.999.999-*/
+                        case 12:
+                            if (!lastChar.equals("-")) {
+                                String currentDigits = etCpf.getText().toString().substring(0, digits - 1);
+                                etCpf.setText("");
+                                etCpf.append(currentDigits + "-" + lastChar);
+                            }
+                            break;
+                    }
+                }
+            }
+        });
+
         /* Radio buttons*/
         rgGender = (RadioGroup) findViewById(R.id.rgGender);
         rbMale = (RadioButton) findViewById(R.id.rbMale);
@@ -271,6 +332,9 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
                 etBirthday.setText(dateFormatter.format(newDate.getTime()));
+                /* Formato pra envio */
+                SimpleDateFormat wrapFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+                formData.put("birthday", wrapFormat.format(newDate.getTime()));
             }
 
         }, nowCalendar.get(Calendar.YEAR), nowCalendar.get(Calendar.MONTH), nowCalendar.get(Calendar.DAY_OF_MONTH));
@@ -374,8 +438,8 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                                 try {
                                     progressHelper.dismiss();
                                     JSONObject jsonObject = new JSONObject(jsonStringResponse);
-                                    if(jsonObject.getBoolean("status")){
-                                        CustomSnackBar.make(coordinatorLayout, "Cadastro realizado com sucesso", Snackbar.LENGTH_SHORT, CustomSnackBar.SnackBarType.SUCCESS).show();
+                                    if (jsonObject.getBoolean("status")) {
+                                        setResult(Activity.RESULT_OK);
                                         finish();
                                     } else {
                                         CustomSnackBar.make(coordinatorLayout, "Falha ao realizar cadastro", Snackbar.LENGTH_LONG, CustomSnackBar.SnackBarType.ERROR).show();
@@ -400,6 +464,37 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
     }
 
     /**
+     * Calcula o dígito verificador do CPF
+     * @param prefix - Prefixo do CPF (999.999.999)
+     * @return
+     */
+    private String calcDigVerif(String prefix) {
+        prefix = prefix.replace(".","");
+        Integer primDig, segDig;
+        int soma = 0, peso = 10;
+        for (int i = 0; i < prefix.length(); i++)
+            soma += Integer.parseInt(prefix.substring(i, i + 1)) * peso--;
+
+        if (soma % 11 == 0 | soma % 11 == 1)
+            primDig = 0;
+        else
+            primDig = 11 - (soma % 11);
+
+        soma = 0;
+        peso = 11;
+        for (int i = 0; i < prefix.length(); i++)
+            soma += Integer.parseInt(prefix.substring(i, i + 1)) * peso--;
+
+        soma += primDig * 2;
+        if (soma % 11 == 0 | soma % 11 == 1)
+            segDig = 0;
+        else
+            segDig = 11 - (soma % 11);
+
+        return primDig.toString() + segDig.toString();
+    }
+
+    /**
      * Valida os campos do formulário setando mensagens de erro
      */
     private boolean isValidForm() {
@@ -421,6 +516,16 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
             }
         } else {
             formData.put("email", etEmail.getText().toString());
+        }
+
+        /* Verifica o campo de CPF*/
+        if (!hasValidCpf()) {
+            if (!isFocusRequested) {
+                tilCpf.requestFocus();
+                isFocusRequested = true;
+            }
+        } else {
+            formData.put("cpf", etCpf.getText().toString());
         }
 
         /* Verifica o campo de senha*/
@@ -543,6 +648,8 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
             return false;
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             tilEmail.setError(getResources().getString(R.string.err_msg_invalid_email));
+            ((ImageView) findViewById(R.id.ivEmailCheck)).setImageDrawable(ContextCompat.getDrawable(SingupActivity.this, R.drawable.ic_close_circle));
+            ((ImageView) findViewById(R.id.ivEmailCheck)).setColorFilter(Color.argb(255, 239, 83, 80));
             return false;
         }
 
@@ -556,13 +663,13 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                 progressBar.setVisibility(View.GONE);
                 try {
                     JSONObject json = new JSONObject(jsonStringResponse);
-                    if(json.getBoolean("status")){ /* O email existe */
+                    if (json.getBoolean("status")) { /* O email existe */
                         tilEmail.setError(getResources().getString(R.string.err_msg_existing_email));
-                        ((ImageView)findViewById(R.id.ivEmailCheck)).setImageDrawable(ContextCompat.getDrawable(SingupActivity.this, R.drawable.ic_close_circle));
-                        ((ImageView)findViewById(R.id.ivEmailCheck)).setColorFilter(Color.argb(255, 239,83,80));
+                        ((ImageView) findViewById(R.id.ivEmailCheck)).setImageDrawable(ContextCompat.getDrawable(SingupActivity.this, R.drawable.ic_close_circle));
+                        ((ImageView) findViewById(R.id.ivEmailCheck)).setColorFilter(Color.argb(255, 239, 83, 80));
                     } else {
-                        ((ImageView)findViewById(R.id.ivEmailCheck)).setImageDrawable(ContextCompat.getDrawable(SingupActivity.this, R.drawable.ic_check));
-                        ((ImageView)findViewById(R.id.ivEmailCheck)).setColorFilter(Color.argb(255, 0,192,96));
+                        ((ImageView) findViewById(R.id.ivEmailCheck)).setImageDrawable(ContextCompat.getDrawable(SingupActivity.this, R.drawable.ic_check));
+                        ((ImageView) findViewById(R.id.ivEmailCheck)).setColorFilter(Color.argb(255, 0, 192, 96));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -571,12 +678,62 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
 
             @Override
             public void onFail(VolleyError error) {
+                progressBar.setVisibility(View.GONE);
                 tilEmail.setError(getResources().getString(R.string.err_msg_server_fail));
                 findViewById(R.id.ivEmailCheck).setVisibility(View.VISIBLE);
             }
         });
 
         tilEmail.setErrorEnabled(false);
+        return true;
+    }
+
+    private boolean hasValidCpf() {
+        String cpf = etCpf.getText().toString().trim();
+        Pattern CPF_PATTERN = Pattern.compile("[0-9]{3}[\\.][0-9]{3}[\\.][0-9]{3}[-][0-9]{2}");
+
+        if (TextUtils.isEmpty(cpf)) {
+            tilCpf.setError(getResources().getString(R.string.err_msg_empty_cpf));
+            return false;
+        } else if (!CPF_PATTERN.matcher(cpf).matches() || !calcDigVerif(cpf.substring(0,11)).equals(cpf.substring(12,14))) {
+            tilCpf.setError(getResources().getString(R.string.err_msg_invalid_cpf));
+            ((ImageView) findViewById(R.id.ivCpfCheck)).setImageDrawable(ContextCompat.getDrawable(SingupActivity.this, R.drawable.ic_close_circle));
+            ((ImageView) findViewById(R.id.ivCpfCheck)).setColorFilter(Color.argb(255, 239, 83, 80));
+            return false;
+        }
+
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.pbCpfCheck);
+        findViewById(R.id.ivCpfCheck).setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        NetworkHelper.getInstance(this).cpfExists(cpf, new ResponseCallback() {
+            @Override
+            public void onSuccess(String jsonStringResponse) {
+                findViewById(R.id.ivCpfCheck).setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
+                try {
+                    JSONObject json = new JSONObject(jsonStringResponse);
+                    if (json.getBoolean("status")) { /* O CPF existe */
+                        tilCpf.setError(getResources().getString(R.string.err_msg_existing_cpf));
+                        ((ImageView) findViewById(R.id.ivCpfCheck)).setImageDrawable(ContextCompat.getDrawable(SingupActivity.this, R.drawable.ic_close_circle));
+                        ((ImageView) findViewById(R.id.ivCpfCheck)).setColorFilter(Color.argb(255, 239, 83, 80));
+                    } else {
+                        ((ImageView) findViewById(R.id.ivCpfCheck)).setImageDrawable(ContextCompat.getDrawable(SingupActivity.this, R.drawable.ic_check));
+                        ((ImageView) findViewById(R.id.ivCpfCheck)).setColorFilter(Color.argb(255, 0, 192, 96));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFail(VolleyError error) {
+                progressBar.setVisibility(View.GONE);
+                tilCpf.setError(getResources().getString(R.string.err_msg_server_fail));
+                findViewById(R.id.ivCpfCheck).setVisibility(View.VISIBLE);
+            }
+        });
+
+        tilCpf.setErrorEnabled(false);
         return true;
     }
 
@@ -647,6 +804,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == android.R.id.home) {
+            setResult(Activity.RESULT_CANCELED);
             finish();
         }
         return super.onOptionsItemSelected(menuItem);
@@ -661,6 +819,9 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
                     break;
                 case R.id.etEmail:
                     hasValidEmail();
+                    break;
+                case R.id.etCpf:
+                    hasValidCpf();
                     break;
                 case R.id.etPassword:
                     hasValidPassword();
@@ -686,11 +847,11 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == ACTION_RESULT_GET_IMAGE && resultCode == RESULT_OK){
+        if (requestCode == ACTION_RESULT_GET_IMAGE && resultCode == RESULT_OK) {
             Uri selectedImage = data.getData();
             //Com base na URI da imagem selecionada, prepara o acesso ao banco de dados interno pra pegar a imagem
             String[] columns = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getContentResolver().query(selectedImage,columns,null,null,null);
+            Cursor cursor = getContentResolver().query(selectedImage, columns, null, null, null);
             cursor.moveToFirst();
 
             int columnIndex = cursor.getColumnIndex(columns[0]);
@@ -698,11 +859,11 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
             cursor.close();
 
             //Passa o caminho da imagem pra activity que vai fazer o crop
-            startActivity(new Intent(this,CropActivity.class).putExtra("imagePath",imagePath));
+            startActivity(new Intent(this, CropActivity.class).putExtra("imagePath", imagePath));
         }
     }
 
-    private void callDialog( String message, final String[] permissions ){
+    private void callDialog(String message, final String[] permissions) {
         mMaterialDialog = new MaterialDialog.Builder(this)
                 .title(R.string.title_dialog_permission)
                 .content(message)
@@ -734,7 +895,7 @@ public class SingupActivity extends AppCompatActivity implements View.OnFocusCha
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] imageBytes = baos.toByteArray();
-        formData.put("avatar",Base64.encodeToString(imageBytes, Base64.DEFAULT));
+        formData.put("avatar", Base64.encodeToString(imageBytes, Base64.DEFAULT));
     }
 
     @Override
